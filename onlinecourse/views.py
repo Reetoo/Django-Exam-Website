@@ -110,9 +110,9 @@ def enroll(request, course_id):
          # Add each selected choice object to the submission object
          # Redirect to show_exam_result with the submission id
 def submit(request, course_id):
-    print("SUBMIT CALLED")
     user_enrollment = Enrollment.objects.get(user=request.user, course=course_id);
     new_submission = Submission(enrollment=user_enrollment);
+    new_submission.save();
 
     def extract_answers(request):
         submitted_answers = []
@@ -123,8 +123,14 @@ def submit(request, course_id):
                 submitted_answers.append(choice_id)                
         return submitted_answers
 
-    for choice in extract_answers(request):
-        new_submission.choices.add(choice)
+    #Retrieve choice ids from POST request
+    for choice_id in extract_answers(request):
+        choice = Choice.objects.get(id=choice_id) #Retrieve choice objects using their choice ids
+        new_submission.choices.add(choice) #Add to the submission object.
+    
+    new_submission.save();
+
+    return HttpResponseRedirect(reverse(viewname='onlinecourse:result', args=(course_id, new_submission.id)))
 
 # <HINT> Create an exam result view to check if learner passed exam and show their question results and result for each question,
 # you may implement it based on the following logic:
@@ -132,7 +138,38 @@ def submit(request, course_id):
         # Get the selected choice ids from the submission record
         # For each selected choice, check if it is a correct answer or not
         # Calculate the total score
-#def show_exam_result(request, course_id, submission_id):
+def show_exam_result(request, course_id, submission_id):
+    submission = Submission.objects.get(id=submission_id);
+    course = Course.objects.get(id=course_id);
+    
+    questions = course.question_set.all();
+    choices = submission.choices.all();
+    
+    #Get a list of selected ids
+    selected_ids = []
+    for choice in choices:
+        selected_ids.append(choice.id);
+    print(selected_ids);
+
+    scored_marks = 0;
+    total_marks = 0;
+    for question in questions:
+        if question.is_get_score(selected_ids):
+            scored_marks += question.mark;
+        total_marks += question.mark;
+
+    context = {}
+    context['course'] = get_object_or_404(Course, pk = course.id);
+    return render(request, "onlinecourse/exam_result_bootstrap.html", context);
+
+
+
+
+
+
+
+
+
 
 
 
