@@ -56,7 +56,29 @@
 
             <button type="btn btn-primary" data-toggle="collapse" data-target="#exam">Start Exam</button>
             <div id="exam" class="collapse">
-                Click to expand elements within the collapse div
+		{% if user.is_authenticated %}
+			{% for question in course.question_set.all %}
+				<div class="card mt-1">
+					<div class="card-header">
+						{{question.text}}
+					</div>
+					<div class="card-body">
+						{% for choice in question.choice_set.all %}
+							<div class="input-group mb-3">
+								<div class="input-group-prepend">
+									<div class="input-group-text">
+										<input type="checkbox" id="{{choice.text}}" name="{{question.id}}">
+									</div>
+								</div>
+								<p class="my-auto ml-3">{{choice.text}}</p>
+							</div>
+						{% endfor %}
+					</div>
+				</div>
+			{% endfor %}
+		{% else %}
+			<p>Please sign in to take the exam. </p>
+		{% endif %}
             </div>
 
 

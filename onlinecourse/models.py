@@ -104,8 +104,8 @@ class Enrollment(models.Model):
     # Has question content
     # Other fields and methods you would like to design
 class Question(models.Model):
-    # Foreign key to lesson
-    lesson = models.ForeignKey(Lesson, on_delete = models.CASCADE);
+    # Foreign key to course
+    course = models.ForeignKey(Course, null = True, on_delete = models.SET_NULL);
     # question text
     text = models.CharField(max_length=100, default="text") 
     # question grade/mark
