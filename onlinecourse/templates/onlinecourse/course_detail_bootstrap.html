@@ -57,25 +57,32 @@
             <button type="btn btn-primary" data-toggle="collapse" data-target="#exam">Start Exam</button>
             <div id="exam" class="collapse">
 		{% if user.is_authenticated %}
+		    <form id="questionform" action="{% url 'onlinecourse:submit' course.id %}" method="post">
 			{% for question in course.question_set.all %}
 				<div class="card mt-1">
 					<div class="card-header">
 						{{question.text}}
 					</div>
-					<div class="card-body">
+					{% csrf_token %}
+					<div class="card-body form-group">
 						{% for choice in question.choice_set.all %}
-							<div class="input-group mb-3">
-								<div class="input-group-prepend">
-									<div class="input-group-text">
-										<input type="checkbox" id="{{choice.text}}" name="{{question.id}}">
-									</div>
-								</div>
-								<p class="my-auto ml-3">{{choice.text}}</p>
+							<div class="form-check input-group mb-3">
+    							    <!--<div class="input-group-prepend">
+								    <div class="input-group-text"> -->
+								<label class="form-check-label">
+								    <input type="checkbox" name="choice_{{choice.id}}"
+									class="form-check-input" id="{{choice.id}}"
+									value="{{choice.id}}">{{ choice.text }}
+								</label>
+								    <!--</div>
+							    </div>-->
 							</div>
 						{% endfor %}
 					</div>
 				</div>
 			{% endfor %}
+			<input class="btn btn-success btn-block" type="submit" value="Submit">
+		    </form>
 		{% else %}
 			<p>Please sign in to take the exam. </p>
 		{% endif %}
@@ -106,7 +113,7 @@
                                     <label class="form-check-label">
                                         <input type="checkbox" name="choice_{{choice.id}}"
                                                class="form-check-input" id="{{choice.id}}"
-                                               value="{{choice.id}}">{{ choice.choice_text }}
+                                               value="{{choice.id}}">{{ choice.text }}
                                     </label>
                                 </div>
                             </div>
