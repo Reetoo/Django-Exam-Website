@@ -160,6 +160,9 @@ def show_exam_result(request, course_id, submission_id):
 
     context = {}
     context['course'] = get_object_or_404(Course, pk = course.id);
+    context['scored_marks'] = scored_marks;
+    context['total_marks'] = total_marks;
+    context['grade'] = 100 * scored_marks / total_marks;
     return render(request, "onlinecourse/exam_result_bootstrap.html", context);
 
 
